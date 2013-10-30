@@ -26,6 +26,13 @@ public class Subsampler {
 		try 
 		{
 			BufferedImage img = ImageIO.read(picture);
+			
+			if (((img.getWidth() % blocksize) != 0) || (img.getHeight() % blocksize != 0))
+			{
+				System.out.println("Error: Blocksize not a multiple of image dimensions try again!");
+				System.exit(-1);
+			}
+			
 			for (int w = 0; w < (img.getWidth() / blocksize); w++)
 				for (int h = 0; h < (img.getHeight() / blocksize); h++)
 				{	
@@ -40,6 +47,7 @@ public class Subsampler {
 				}
 			File outputfile = new File("out.png");
 			ImageIO.write(img, "png", outputfile);
+			System.out.println("\n...\nsuccessful");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
