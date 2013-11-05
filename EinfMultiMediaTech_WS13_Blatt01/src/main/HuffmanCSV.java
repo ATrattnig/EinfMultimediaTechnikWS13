@@ -63,7 +63,7 @@ public class HuffmanCSV {
 		
 		System.out.println("Entropy: " + entropy);
 		System.out.println("AverageLength: " + averageLength);
-		System.out.println("Redundancy: " + (averageLength-entropy) / averageLength * 100 + " %");
+		System.out.println("Redundancy: " + (averageLength-entropy));
 		
 	}
 	
