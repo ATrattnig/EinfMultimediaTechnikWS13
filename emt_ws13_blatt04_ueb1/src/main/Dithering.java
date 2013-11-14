@@ -80,28 +80,29 @@ class Dithering
 	 */
 	public static BufferedImage bw_dither(BufferedImage image)
 	{
+		BufferedImage newImage = deepCopy(image);
 		for (int x = 0; x < image.getWidth(); x++)
 			for (int y = 0; y < image.getHeight(); y++)
 			{
 				C3 oldpixel = new C3(image.getRGB(x, y));
 				C3 newpixel = closestColorBW(oldpixel);
-				image.setRGB(x, y, newpixel.toRGB());
-				int quanterror = oldpixel.toRGB() - newpixel.toRGB();
+				newImage.setRGB(x, y, newpixel.toRGB());
+				C3 err = oldpixel.sub(newpixel);
 				
 				if (x != (image.getWidth() - 1) && (y != (image.getHeight() - 1)))
-					image.setRGB(x + 1, y + 1, image.getRGB(x + 1, y + 1) + quanterror *  (1/16));
+					image.setRGB(x + 1, y + 1, new C3(image.getRGB(x + 1, y + 1)).add(err.mul(1./16)).toRGB());
 				
 				if (x != (image.getWidth() - 1))
-					image.setRGB(x + 1, y + 0, image.getRGB(x + 1, y + 0) + quanterror *  (7/16));
+					image.setRGB(x + 1, y + 0, new C3(image.getRGB(x + 1, y + 0)).add(err.mul(7./16)).toRGB());
 				
 				if (x != 0 && (y != (image.getHeight() - 1)))
-					image.setRGB(x - 1, y + 1, image.getRGB(x - 1, y + 1) + quanterror *  (3/16));
+					image.setRGB(x - 1, y + 1, new C3(image.getRGB(x - 1, y + 1)).add(err.mul(3./16)).toRGB());
 				
 				if (y != (image.getHeight() - 1))
-					image.setRGB(x + 0, y + 1, image.getRGB(x + 0, y + 1) + quanterror *  (5/16));
+					image.setRGB(x + 0, y + 1, new C3(image.getRGB(x + 0, y + 1)).add(err.mul(5./16)).toRGB());
 
 			}
-		return image;
+		return newImage;
 	}
 	
 	/**
@@ -110,28 +111,30 @@ class Dithering
 	 */
 	public static BufferedImage color_dither(BufferedImage image)
 	{
+		BufferedImage newImage = deepCopy(image);
 		for (int x = 0; x < image.getWidth(); x++)
 			for (int y = 0; y < image.getHeight(); y++)
 			{
 				C3 oldpixel = new C3(image.getRGB(x, y));
 				C3 newpixel = closestColor(oldpixel, palette);
 				image.setRGB(x, y, newpixel.toRGB());
-				int quanterror = oldpixel.toRGB() - newpixel.toRGB();
+				newImage.setRGB(x, y, newpixel.toRGB());
+				C3 err = oldpixel.sub(newpixel);
 				
 				if (x != (image.getWidth() - 1) && (y != (image.getHeight() - 1)))
-					image.setRGB(x + 1, y + 1, image.getRGB(x + 1, y + 1) + quanterror *  (1/16));
+					image.setRGB(x + 1, y + 1, new C3(image.getRGB(x + 1, y + 1)).add(err.mul(1./16)).toRGB());
 				
 				if (x != (image.getWidth() - 1))
-					image.setRGB(x + 1, y + 0, image.getRGB(x + 1, y + 0) + quanterror *  (7/16));
+					image.setRGB(x + 1, y + 0, new C3(image.getRGB(x + 1, y + 0)).add(err.mul(7./16)).toRGB());
 				
 				if (x != 0 && (y != (image.getHeight() - 1)))
-					image.setRGB(x - 1, y + 1, image.getRGB(x - 1, y + 1) + quanterror *  (3/16));
+					image.setRGB(x - 1, y + 1, new C3(image.getRGB(x - 1, y + 1)).add(err.mul(3./16)).toRGB());
 				
 				if (y != (image.getHeight() - 1))
-					image.setRGB(x + 0, y + 1, image.getRGB(x + 0, y + 1) + quanterror *  (5/16));
+					image.setRGB(x + 0, y + 1, new C3(image.getRGB(x + 0, y + 1)).add(err.mul(5./16)).toRGB());
 
 			}
-		return image;
+		return newImage;
 	}
 	
 	/**
