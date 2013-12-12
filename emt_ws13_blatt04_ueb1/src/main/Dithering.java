@@ -80,7 +80,8 @@ class Dithering
 	 */
 	public static BufferedImage bw_dither(BufferedImage image)
 	{
-		BufferedImage newImage = deepCopy(image);
+		BufferedImage newImage = deepCopy(image); //NOTE: durch richtiges Schachteln der for schleife erspart man 
+		//sich diese kopie
 		for (int x = 0; x < image.getWidth(); x++)
 			for (int y = 0; y < image.getHeight(); y++)
 			{
@@ -144,7 +145,9 @@ class Dithering
 	public static C3 closestColorBW(C3 color)
 	{	
 		//TODO IMPLEMENT FOR EXCERCISE 4.1
-		int average = (color.r + color.g + color.b) / 3;
+		//BETTER: get the grey value and then compare !
+		//int average = (color.r + color.g + color.b) / 3;
+		int average = (int) (.299 * color.r + .587 * color.g + .114 * color.b);
 		C3 closest = new C3(0, 0, 0);
 		if (average > 127)
 			closest = new C3(255, 255, 255);
