@@ -26,14 +26,47 @@ public class Waveform extends ApplicationFrame
 	 */
 	public static double[][] parseAudioWavformData()
 	{
+		double[][] retVals = null;
 		try {
 			
 			// the input file can be hardcoded like this
 			File fXmlFile = new File("mpeg7_02ms.xml");
-			
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+			doc.getDocumentElement().normalize();
 			// search for all AudioDescriptor elements first
+			NodeList nList = doc.getElementsByTagName("AudioDescriptor");
 					 
 			// iterate over them and find the element with the type AudioWaveformType
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+				 
+				Node nNode = nList.item(temp);
+		 
+				System.out.println("\nCurrent Element :" + nNode.getNodeName());
+		 
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) 
+				{
+		 
+					Element eElement = (Element) nNode;
+					if (eElement.getAttribute("xsi:type").equals("AudioWaveformType"))
+					{
+						Element eSeriesOfScalar = (Element) eElement.getElementsByTagName("SeriesOfScalar").item(0);
+						String totalNumOfSamples = eSeriesOfScalar.getAttribute("totalNumOfSamples");
+						System.out.println("totalNumOfSamples: " +  totalNumOfSamples);
+						retVals = new double[2][Integer.parseInt(totalNumOfSamples)];
+						String sMin = eSeriesOfScalar.getElementsByTagName("Min").item(0).getTextContent();
+						String sMax = eSeriesOfScalar.getElementsByTagName("Max").item(0).getTextContent();
+						String[] saMin = sMin.split(" ");
+						String[] saMax = sMax.split(" ");
+						for (int i = 0; i < Integer.parseInt(totalNumOfSamples); i++)
+						{
+							retVals[0][i] = Double.parseDouble(saMin[i+1]);
+							retVals[1][i] = Double.parseDouble(saMax[i+1]);
+						}
+					}
+				}
+			}
 			
 			// if you found that element search for the next nested element SeriesOfScalar 
 			
@@ -44,13 +77,14 @@ public class Waveform extends ApplicationFrame
 			// separate the data points in the string via string.split(RegEx), convert them to double and store them in a double[][]
 			
 			// return the double[][]
+			
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 	    }
 	
-		return null;
+		return retVals;
 	}
 	
 	/**
@@ -63,16 +97,24 @@ public class Waveform extends ApplicationFrame
 		double[][] data = parseAudioWavformData();
 		
 		//create two XYSeries Min and Max
-		
+		XYSeries xysMin = new XYSeries("Min");
+		XYSeries xysMax = new XYSeries("Max");
 		// fill the XYSeries with data
-		
+		for (int i = 0; i < data[0].length-1; i++)
+		{
+			xysMin.add(i, data[0][i]);
+			xysMax.add(i, data[1][i]);
+		}
 		// create a XYSeriesCollection
+		XYSeriesCollection xyscCol = new XYSeriesCollection();
 		
 		// add the XYSeries to the collection
+		xyscCol.addSeries(xysMin);
+		xyscCol.addSeries(xysMax);
 		
 		// return the collection
 		
-		return null;
+		return xyscCol;
 	}
 	
 	private static final long serialVersionUID = 1L;
