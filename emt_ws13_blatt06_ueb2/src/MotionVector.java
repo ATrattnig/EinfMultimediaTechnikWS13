@@ -14,7 +14,7 @@ public class MotionVector
 		int[][] r_frame = getLumincanceChannel("image-0096.png");
 		int[][] t_frame = getLumincanceChannel("image-0097.png");
 		
-		MotionVector vector = searchMotionVector(r_frame, t_frame, 8, 32, 256, 256);
+		MotionVector vector = searchMotionVector(r_frame, t_frame, 8, 64, 256, 256);
 		
 		if(vector != null)
 			System.out.println(vector.toString());
